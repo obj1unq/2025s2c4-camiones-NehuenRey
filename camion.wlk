@@ -5,7 +5,8 @@ object camion {
 	var property pesoTotal = tara
 	const property conPesoPar = cosas.all { c => (c.peso()%2 ) == 0 }
 	const property tara = 1000
-	const property pesoLimite = 2500
+	var property pesoLimite = 2500
+	var property bultosCamion = 0
 	 
 
 	method cargar(unaCosa) {
@@ -53,13 +54,85 @@ object camion {
 	method cosasMasPeligrosas(cantPeligro){
 		return{
 			if (cosas.contains(cantPeligro)){
-				cosas.any{ c => c.nivelPeligrosidad() > cantPeligro.nivelPeligrosidad() }
+				cosas.filter{ c => c.nivelPeligrosidad() > cantPeligro.nivelPeligrosidad() }
 			} else {
-				cosas.any{ c => c.nivelPeligrosidad() > cantPeligro }
+				cosas.filter{ c => c.nivelPeligrosidad() > cantPeligro }
 			}
+		}
+	}
+
+	method puedeCircularEn(rutaActual){
+		return{
+			not self.sePasaDePeso() && self.rutaSinPeligro(rutaActual)
+		}
+	}
+
+	method rutaSinPeligro(rutaActual){
+		(self.cosasMasPeligrosas( rutaActual.maxpeligrosidad())).isEmpty()
+	}
+
+	method pesoEntre(pesomin, pesomax){
+		return{
+			cosas.any({c => (c.peso() > pesomin) && (c.peso() < pesomax)})
+		}
+	}
+
+	method masPesada(){
+		return{
+			(cosas.sortby{c1 , c2 => c1.peso() > c2.peso()}).head()
+		}
+	}
+
+	method pesos(){
+		return{
+			cosas.map({c => c.peso()})
+		}
+	}
+	
+	method cantidadBultos() {
+	  bultosCamion = 0
+	  cosas.forEach({c => bultosCamion = bultosCamion + c.cantBultos()})
+	  return{
+		bultosCamion
+	  }
+	}
+
+	method sufrirAcctidente(){
+		cosas.forEach({c => c.reaccionarAccidente()})
+	}
+
+	method transportar(destino, camino){
+		pesoLimite = destino.soporteDePeso()
+		if (camino.cumpleRequerimientos(self)){
+			cosas.forEach({c => destino.almacenar(c)})
+			cosas.clear()
 		}
 	}
 
 }
 
+object almacen{
+	var property almacenaje =  #{}
+
+	method almacenar(objeto){
+		almacenaje.add(objeto)
+	}
+}
+
+object ruta9 {
+	const property maxpeligrosidad = 20
+	const property soporteDePeso = 2500
+	
+	method cumpleRequerimientos(automovil){
+		automovil.puedeCircularEn(self)
+	}
+}
+
+object caminosVecinales {
+	const property soporteDePeso = 2000
+	
+	method cumpleRequerimientos(automovil){
+		automovil.pesoTotal() <= soporteDePeso
+	}
+}
 
