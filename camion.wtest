@@ -1,0 +1,75 @@
+import camion.*
+import cosas.*
+
+describe "Tests de Camion"{
+
+
+    test "carga y descarga"{
+        camion.cargar(bumblebee)
+        assert.that(camion.cosas() == #{bumblebee})
+        camion.cargar(knightRider)
+        assert.that(camion.cosas() == #{bumblebee, knightRider})
+        camion.descargar(bumblebee)
+        assert.that(camion.cosas() == #{knightRider})
+    }
+
+    test "peso par"{
+        camion.cargar(bumblebee)
+        arenaAGranel.peso(50)
+        camion.cargar(arenaAGranel)
+        assert.that(camion.todoPesoPar())
+    }
+
+    test "peso impar"{
+        camion.cargar(bumblebee)
+        arenaAGranel.peso(51)
+        camion.cargar(arenaAGranel) 
+        assert.notThat( camion.todoPesoPar())
+    }
+
+    test "hay algo que pesa 50"{
+        camion.cargar(bumblebee)
+        arenaAGranel.peso(50)
+        camion.cargar(arenaAGranel)
+        assert.that(camion.hayAlgunoQuePesa(50))
+    }
+
+    test "hay algo que pesa 800"{
+        camion.cargar(bumblebee)
+        arenaAGranel.peso(50)
+        camion.cargar(arenaAGranel)
+        assert.that(camion.hayAlgunoQuePesa(800))
+    }
+
+    test "hay algo que pesa 500"{
+        camion.cargar(bumblebee)
+        arenaAGranel.peso(50)
+        camion.cargar(arenaAGranel)
+        assert.notThat(camion.hayAlgunoQuePesa(500))
+    }
+
+    test "de nivel 0"{
+        camion.cargar(bumblebee)
+        camion.cargar(bateríaAntiaérea)
+        camion.cargar(residuosRadiactivos)
+        assert.equals(bateríaAntiaérea, camion.hayAlgunoConPeligro(0))
+    }
+
+    test "de nivel 15"{
+        camion.cargar(bumblebee)
+        camion.cargar(bateríaAntiaérea)
+        camion.cargar(residuosRadiactivos)
+        assert.equals(bumblebee, camion.hayAlgunoConPeligro(15))
+    }
+
+    test "de nivel 200"{
+        camion.cargar(bumblebee)
+        camion.cargar(bateríaAntiaérea)
+        camion.cargar(residuosRadiactivos)
+        assert.equals(residuosRadiactivos, camion.hayAlgunoConPeligro(200))
+    }
+
+    
+
+
+}
