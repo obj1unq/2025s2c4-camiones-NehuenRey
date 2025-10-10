@@ -14,7 +14,7 @@ object arenaAGranel {
 	}
 }
 object bumblebee {
-	var property estaEnFormaRobot = true
+	var property estaEnFormaRobot = false
 
 	method peso() { return 800 }
 	method cantBultos() {return 2}
@@ -32,10 +32,10 @@ object bumblebee {
 	}
 
 	method nivelPeligrosidad() { 
-		return{ if (estaEnFormaRobot) {
+		return if (estaEnFormaRobot) {
 			30
 		}
-		else 15}
+		else 15
 	}
 }
 object paqueteDeLadrillos {
@@ -65,7 +65,7 @@ object paqueteDeLadrillos {
 	method nivelPeligrosidad() { return 2 }
 }
 object bateríaAntiaérea {
-	var hayMisiles = true
+	var hayMisiles = false
 	var property cantBultos = self.bultos()
 
 	
@@ -90,18 +90,19 @@ object bateríaAntiaérea {
 	}
 
 	method peso() { 
-		return { 
+		return  
 		if (hayMisiles) {
 			300
 		}
-		else 200}} 
+		else 200} 
 
 	method nivelPeligrosidad() { 
-		return { 
+		return  
 		if (hayMisiles) {
 			100
-		}
-		else 0} }
+		}else{ 0 }
+		
+	}
 }
 object residuosRadiactivos {
 	var property peso = 50
@@ -114,10 +115,27 @@ object residuosRadiactivos {
 }
 
 object contenedorPortuario {
-	var property peso = 100 + carga.forEach({ c => c.peso()})
-	var property peligrosidad = self.peligrosidadMax()
+	var peso = 100 
+	var peligrosidadPropia = self.peligrosidadMax()
 	var property carga = #{}
-	var property cantBultos = 1 + carga.forEach({ c => c.cantBultos()})
+	var property cantBultos = 1
+
+
+	method nivelpeligrosidad(){
+		return peligrosidadPropia
+	}
+
+	method peso(){
+		peso = 100
+		carga.forEach({ c => peso += c.peso()})
+		return peso
+	}
+
+	method cantBultos(){
+		cantBultos = 1
+		carga.forEach({ c => cantBultos += c.cantBultos()})
+		return cantBultos
+	}
 
 	method reaccionarAccidente(){
 		carga.forEach({ c => c.reaccionarAccidente() })
@@ -136,7 +154,7 @@ object embalajeDeSeguridad {
 	var property objeto = knightRider
 	method cantBultos() {return 2}
 	const property peso = objeto.peso()
-	const property peligrosidad = 0.5*objeto.peligrosidad()
+	const property peligrosidad = objeto.nivelPeligrosidad() * 0.5
 	method reaccionarAccidente(){} 
 
 }

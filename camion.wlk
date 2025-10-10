@@ -3,14 +3,15 @@ import cosas.*
 object camion {
 	const property cosas = #{}
 	var property pesoTotal = tara
-	const property conPesoPar = cosas.all { c => (c.peso()%2 ) == 0 }
 	const property tara = 1000
 	var property pesoLimite = 2500
 	var property bultosCamion = 0
 	 
 
 	method cargar(unaCosa) {
-		if (not cosas.contains(unaCosa)){
+		if (cosas.contains(unaCosa)){
+			throw new UserException (message = "No puedes cargar algo que ya se encuentra en el camion")
+		}else{
 			cosas.add(unaCosa)
 		}
 	}
@@ -18,25 +19,27 @@ object camion {
 	method descargar(unaCosa){
 		if (cosas.contains(unaCosa)){
 			cosas.remove(unaCosa)
+		} else{
+			throw new UserException (message = "No puedes descargar algo que no se encuentra en el camion")
 		}
 		
 	}
 
 	method todoPesoPar() {
-		return conPesoPar.size() == cosas.size()
+		return cosas.all({c => (((c.peso())%(2) ) == 0) })
 	  
 	}
 
+	
 	method hayAlgunoQuePesa(pesoBuscado){
-		return {
-			cosas.any{ c => c.peso() == pesoBuscado }
-		}
+		return cosas.any({ c => c.peso() == pesoBuscado })
+		
 	}
 
 	method pesoTotal() {
-	pesoTotal = tara
-	cosas.forEach({n => pesoTotal = pesoTotal + n})
-	  return pesoTotal
+		pesoTotal = tara
+		cosas.forEach({n => pesoTotal = pesoTotal + n})
+	  return{ pesoTotal}
 	}
 
 	method sePasaDePeso(){
@@ -46,9 +49,7 @@ object camion {
 	}
 
 	method hayAlgunoConPeligro(nivelPeligro){
-		return {
-			cosas.any{ c => c.nivelPeligrosidad() == nivelPeligro }
-		}
+		return cosas.find{ c => c.nivelPeligrosidad() == nivelPeligro } 
 	}
 
 	method cosasMasPeligrosas(cantPeligro){
@@ -106,6 +107,8 @@ object camion {
 		if (camino.cumpleRequerimientos(self)){
 			cosas.forEach({c => destino.almacenar(c)})
 			cosas.clear()
+		} else{
+			throw new UserException (message = "No puedes pasar por esta ruta")
 		}
 	}
 
@@ -136,3 +139,4 @@ object caminosVecinales {
 	}
 }
 
+class UserException inherits Exception { }
